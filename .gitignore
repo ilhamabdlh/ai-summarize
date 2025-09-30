@@ -24,9 +24,14 @@ go.work
 
 # Uploads directory
 uploads/
-*.pdf
-*.docx
-*.txt
+uploads/*.pdf
+uploads/*.docx
+uploads/*.txt
+
+# Keep assets folder (for screenshots)
+!assets/
+!assets/*.png
+!assets/*.jpg
 
 # IDE files
 .vscode/

@@ -175,7 +175,7 @@ curl -X POST http://13.238.195.216:8080/api/v1/upload \
 }
 ```
 
-![Upload API Response](docs/screenshots/upload-response.png)
+![Upload API Response](assets/upload-response.png)
 
 ---
 
@@ -200,7 +200,7 @@ curl -X POST http://13.238.195.216:8080/api/v1/evaluate \
 }
 ```
 
-![Evaluate API Response](docs/screenshots/evaluate-response.png)
+![Evaluate API Response](assets/evaluate-response.png)
 
 ---
 
@@ -240,7 +240,7 @@ curl http://13.238.195.216:8080/api/v1/result/68db7478f39fca39828d4ab6
 }
 ```
 
-![Result API Response](docs/screenshots/result-response.png)
+![Result API Response](assets/result-response.png)
 
 ---
 
@@ -264,7 +264,7 @@ curl http://13.238.195.216:8080/api/v1/job/68db7478f39fca39828d4ab6
 }
 ```
 
-![Job Status API Response](docs/screenshots/job-status-response.png)
+![Job Status API Response](assets/job-status-response.png)
 
 ---
 
@@ -309,7 +309,7 @@ curl http://13.238.195.216:8080/api/v1/jobs
 }
 ```
 
-![List Jobs API Response](docs/screenshots/list-jobs-response.png)
+![List Jobs API Response](assets/list-jobs-response.png)
 
 ---
 
