@@ -75,7 +75,7 @@ func Load() (*Config, error) {
 		},
 		MongoDB: MongoDBConfig{
 			URI:      getEnv("MONGODB_URI", "mongodb://localhost:27017"),
-			Database: getEnv("MONGODB_DATABASE", "ai_cv_evaluator"),
+			Database: getEnv("MONGODB_DATABASE", "ai_cv_summarize"),
 		},
 		Redis: RedisConfig{
 			URL: getEnv("REDIS_URL", "redis://localhost:6379"),
