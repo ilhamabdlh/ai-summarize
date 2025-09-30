@@ -135,28 +135,217 @@ redis-server
 go run cmd/server/main.go
 ```
 
-## 📖 Usage
+## 📖 API Usage & Testing
 
-### 1. Upload Files
+**Base URL:** `http://13.238.195.216:8080`
+
+### 1. Health Check
+
+**Endpoint:** `GET /health`
+
 ```bash
-curl -X POST http://localhost:8080/api/v1/upload \
-  -F "cv_file=@cv.pdf" \
-  -F "project_file=@project.docx"
+curl http://13.238.195.216:8080/health
 ```
 
-### 2. Start Evaluation
+**Response:**
+```json
+{
+    "status": "ok"
+}
+```
+
+---
+
+### 2. Upload Files
+
+**Endpoint:** `POST /api/v1/upload`
+
 ```bash
-curl -X POST http://localhost:8080/api/v1/evaluate \
+curl -X POST http://13.238.195.216:8080/api/v1/upload \
+  -F "cv_file=@CV-human-name.pdf" \
+  -F "project_file=@project-file-example.docx"
+```
+
+**Response:**
+```json
+{
+    "message": "Files uploaded successfully",
+    "cv_file": "172475_CV-human-name.pdf",
+    "project_file": "12306_project-file-example.docx"
+}
+```
+
+![Upload API Response](docs/screenshots/upload-response.png)
+
+---
+
+### 3. Start Evaluation
+
+**Endpoint:** `POST /api/v1/evaluate`
+
+```bash
+curl -X POST http://13.238.195.216:8080/api/v1/evaluate \
   -H "Content-Type: application/json" \
   -d '{
-    "cv_file": "cv.pdf",
-    "project_file": "project.docx"
+    "cv_file": "172475_CV-human-name.pdf",
+    "project_file": "12306_project-file-example.docx"
   }'
 ```
 
-### 3. Check Status
+**Response:**
+```json
+{
+    "id": "68db7478f39fca39828d4ab6",
+    "status": "queued"
+}
+```
+
+![Evaluate API Response](docs/screenshots/evaluate-response.png)
+
+---
+
+### 4. Get Evaluation Result
+
+**Endpoint:** `GET /api/v1/result/{job_id}`
+
 ```bash
-curl http://localhost:8080/api/v1/result/{job_id}
+curl http://13.238.195.216:8080/api/v1/result/68db7478f39fca39828d4ab6
+```
+
+**Response (Completed):**
+```json
+{
+    "id": "68db7478f39fca39828d4ab6",
+    "status": "completed",
+    "result": {
+        "cv_match_rate": 0.6,
+        "cv_feedback": "The candidate has a good range of technical skills, including backend languages and databases which match the job requirements. However, there is no mention of experience with cloud technologies or AI/LLM development, which are key for this role. The candidate has a decent amount of experience, but only two projects are mentioned, which doesn't give a clear picture of their ability to handle complex projects. The achievements listed are not relevant to the job role. There is no information provided about the candidate's collaboration skills or cultural fit, but their academic background and range of skills suggest a learning mindset.",
+        "project_score": 4,
+        "project_feedback": "The candidate has demonstrated strong skills across a variety of backend technologies and concepts, including RESTful API design, database management, user authentication, and AI integration. The projects show a good understanding of error handling, retry logic, and clean, modular code. The candidate has also shown creativity in their projects, particularly with the integration of AI for content moderation. However, there is room for improvement in terms of providing more detailed documentation for each project, including setup instructions and trade-offs. Additionally, while the candidate has demonstrated some understanding of LLM and prompt design in the context of AI, it would be beneficial to see more in-depth work in this area.",
+        "overall_summary": "The candidate exhibits a strong range of technical skills and a decent level of experience, as evidenced by their CV and project evaluations. Their key strengths include backend languages, databases, RESTful API design, and AI integration. However, they could improve in areas such as experience with cloud technologies, AI/LLM development, and providing more detailed project documentation. Although the candidate's achievements are not entirely relevant to the job role and there's a lack of information about their cultural fit, their academic background and skills suggest a learning mindset. Given their demonstrated skills and potential for growth, it is recommended to consider this candidate for the role, but further assessment of their experience with cloud technologies and AI/LLM development may be necessary.",
+        "cv_scores": {
+            "technical_skills": 3.5,
+            "experience_level": 3,
+            "achievements": 2,
+            "cultural_fit": 3
+        },
+        "project_scores": {
+            "correctness": 4,
+            "code_quality": 4,
+            "resilience": 4,
+            "documentation": 4,
+            "creativity": 4
+        }
+    }
+}
+```
+
+![Result API Response](docs/screenshots/result-response.png)
+
+---
+
+### 5. Get Job Status
+
+**Endpoint:** `GET /api/v1/job/{job_id}`
+
+```bash
+curl http://13.238.195.216:8080/api/v1/job/68db7478f39fca39828d4ab6
+```
+
+**Response:**
+```json
+{
+    "completed_at": "2025-09-30T06:11:36.577Z",
+    "created_at": "2025-09-30T06:11:04.377Z",
+    "id": "68db7478f39fca39828d4ab6",
+    "started_at": "2025-09-30T06:11:04.437Z",
+    "status": "completed",
+    "updated_at": "2025-09-30T06:11:36.577Z"
+}
+```
+
+![Job Status API Response](docs/screenshots/job-status-response.png)
+
+---
+
+### 6. List All Jobs
+
+**Endpoint:** `GET /api/v1/jobs`
+
+```bash
+curl http://13.238.195.216:8080/api/v1/jobs
+```
+
+**Response:**
+```json
+{
+    "jobs": [
+        {
+            "completed_at": "2025-09-30T06:11:36.577Z",
+            "created_at": "2025-09-30T06:11:04.377Z",
+            "id": "68db7478f39fca39828d4ab6",
+            "result": {
+                "cv_match_rate": 0.6,
+                "cv_feedback": "The candidate has a good range of technical skills...",
+                "project_score": 4,
+                "project_feedback": "The candidate has demonstrated strong skills...",
+                "overall_summary": "The candidate exhibits a strong range of technical skills...",
+                "cv_scores": {
+                    "technical_skills": 3.5,
+                    "experience_level": 3,
+                    "achievements": 2,
+                    "cultural_fit": 3
+                },
+                "project_scores": {
+                    "correctness": 4,
+                    "code_quality": 4,
+                    "resilience": 4,
+                    "documentation": 4,
+                    "creativity": 4
+                }
+            }
+        }
+    ]
+}
+```
+
+![List Jobs API Response](docs/screenshots/list-jobs-response.png)
+
+---
+
+## 🧪 Testing Results
+
+### ✅ Successful Test Results:
+
+1. **Health Check** - ✅ 200 OK (196ms)
+2. **Upload Files** - ✅ 200 OK (1.21s)
+3. **Start Evaluation** - ✅ 200 OK (401ms)
+4. **Get Result** - ✅ 200 OK (168ms)
+5. **Get Job Status** - ✅ 200 OK (181ms)
+6. **List All Jobs** - ✅ 200 OK (181ms)
+
+### 📊 Performance Metrics:
+
+- **Upload Response Time**: ~1.2 seconds
+- **Evaluation Queue Time**: ~400ms
+- **AI Processing Time**: ~30-45 seconds (background)
+- **Result Retrieval**: ~180ms
+
+---
+
+## 🌐 Live API Deployment
+
+**Production URL:** `http://13.238.195.216:8080`
+
+All endpoints are accessible at this base URL for testing and demonstration purposes.
+
+---
+
+## 📖 Additional Usage Examples
+
+### Check Status
+```bash
+curl http://13.238.195.216:8080/api/v1/result/{job_id}
 ```
 
 ## 🔍 Evaluation Process
@@ -243,24 +432,24 @@ go test -tags=integration ./...
 ### Load Testing
 ```bash
 # Using Apache Bench
-ab -n 1000 -c 10 http://localhost:8080/health
+ab -n 1000 -c 10 http://13.238.195.216:8080/health
 ```
 
 ## 📊 Monitoring
 
 ### Health Check
 ```bash
-curl http://localhost:8080/health
+curl http://13.238.195.216:8080/health
 ```
 
 ### Queue Status
 ```bash
-curl http://localhost:8080/api/v1/queue/status
+curl http://13.238.195.216:8080/api/v1/queue/status
 ```
 
 ### Job Statistics
 ```bash
-curl http://localhost:8080/api/v1/jobs?limit=10&offset=0
+curl http://13.238.195.216:8080/api/v1/jobs?limit=10&offset=0
 ```
 
 ## 🔒 Security
@@ -309,17 +498,4 @@ CMD ["./main"]
 - **Caching**: Redis-based caching for frequent queries
 - **File Streaming**: Efficient file upload and processing
 
-### Scalability
-- **Horizontal Scaling**: Stateless service design
-- **Load Balancing**: Multiple service instances
-- **Queue Scaling**: Redis cluster support
-- **Database Sharding**: MongoDB sharding support
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests
-5. Submit a pull request
 
